@@ -1,5 +1,6 @@
 package uk.co.deanwild.materialshowcaseview;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -13,6 +14,7 @@ public class ShowcaseConfig {
 
     private long mDelay = -1;
     private int mMaskColour;
+    private Bitmap mMaskBitmap;
     private Typeface mDismissTextStyle;
 
     private int mContentTextColor;
@@ -34,6 +36,14 @@ public class ShowcaseConfig {
 
     public void setDelay(long delay) {
         this.mDelay = delay;
+    }
+
+    public Bitmap getMaskBitmap() {
+        return mMaskBitmap;
+    }
+
+    public void setMaskBitmap(Bitmap mMaskBitmap) {
+        this.mMaskBitmap = mMaskBitmap;
     }
 
     public int getMaskColor() {

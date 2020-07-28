@@ -1,5 +1,7 @@
 package uk.co.deanwild.materialshowcaseviewsample;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -58,6 +60,7 @@ public class SequenceExample extends AppCompatActivity implements View.OnClickLi
 
     private void presentShowcaseSequence() {
 
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.question_mark512);
         ShowcaseConfig config = new ShowcaseConfig();
         config.setDelay(500); // half second between each showcase view
 
@@ -76,20 +79,33 @@ public class SequenceExample extends AppCompatActivity implements View.OnClickLi
 
         sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
+                        .setTarget(mButtonOne)
+                        .setContentText("This is button one")
+                        .setDismissText("GOT IT")
+                        .setImageBitmap(bm)
+                        .setDismissOnTouch(true)
+                        .build());
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
                         .setSkipText("SKIP")
                         .setTarget(mButtonTwo)
                         .setDismissText("GOT IT")
                         .setContentText("This is button two")
                         .withRectangleShape(true)
+                        .setImageBitmap(bm)
+                        .setDismissOnTouch(true)
                         .build()
         );
 
         sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
+                        .setImageBitmap(bm)
                         .setTarget(mButtonThree)
                         .setDismissText("GOT IT")
                         .setContentText("This is button three")
                         .withRectangleShape()
+                        .setMaskBitmap(bm)
                         .build()
         );
 

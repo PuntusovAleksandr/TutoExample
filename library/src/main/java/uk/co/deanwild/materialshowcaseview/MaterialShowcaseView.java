@@ -6,12 +6,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,6 +64,7 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private int tooltipMargin = DEFAULT_TOOLTIP_MARGIN;
 
     private View mContentBox;
+    private ImageView mImageView;
     private TextView mTitleTextView;
     private TextView mContentTextView;
     private TextView mDismissButton;
@@ -72,7 +76,8 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private boolean mDismissOnTouch = false;
     private boolean mShouldRender = false; // flag to decide when we should actually render
     private boolean mRenderOverNav = false;
-    private int mMaskColour;
+    private int mMaskColour = 0;
+    private Bitmap mMaskBitmap;
     private IAnimationFactory mAnimationFactory;
     private boolean mShouldAnimate = true;
     private boolean mUseFadeAnimation = false;
@@ -127,12 +132,13 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         // consume touch events
         setOnTouchListener(this);
 
-        mMaskColour = Color.parseColor(ShowcaseConfig.DEFAULT_MASK_COLOUR);
+//        mMaskColour = Color.parseColor(ShowcaseConfig.DEFAULT_MASK_COLOUR);
         setVisibility(INVISIBLE);
 
 
         View contentView = LayoutInflater.from(getContext()).inflate(R.layout.showcase_content, this, true);
         mContentBox = contentView.findViewById(R.id.content_box);
+        mImageView = contentView.findViewById(R.id.iv_image);
         mTitleTextView = contentView.findViewById(R.id.tv_title);
         mContentTextView = contentView.findViewById(R.id.tv_content);
         mDismissButton = contentView.findViewById(R.id.tv_dismiss);
@@ -181,8 +187,25 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         // clear canvas
         mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-        // draw solid background
-        mCanvas.drawColor(mMaskColour);
+        mCanvas.drawColor(Color.parseColor(ShowcaseConfig.DEFAULT_MASK_COLOUR));
+
+        if (mMaskColour != 0) {
+            // draw solid background
+            mCanvas.drawColor(mMaskColour);
+        } else if (mMaskBitmap != null) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            Matrix matrix = new Matrix();
+            matrix.postScale(10, 15);
+            matrix.postRotate(45);
+
+            Bitmap bitmap = Bitmap.createBitmap(mMaskBitmap, 0, 0, mMaskBitmap.getWidth() / 2, mMaskBitmap.getHeight() / 2, matrix, true);
+            mCanvas.drawBitmap(mMaskBitmap, 0, 0, null);
+
+//            int halfWidth = Width/2;
+//            int halfHeight = Height/2
+//            Rect dstRectForRender = new Rect( X - halfWidth, Y - halfHeight, X + halfWidth, Y + halfHeight );
+//            canvas.drawBitmap ( someBitmap, null, dstRectForRender, null );
+        }
 
         // Prepare eraser Paint if needed
         if (mEraser == null) {
@@ -423,6 +446,18 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         mYPosition = y;
     }
 
+    private void setImageDrawable(Drawable drawable) {
+        if (mImageView != null) {
+            mImageView.setImageDrawable(drawable);
+        }
+    }
+
+    private void setImageBitmap(Bitmap bitmap) {
+        if (mImageView != null) {
+            mImageView.setImageBitmap(bitmap);
+        }
+    }
+
     private void setTitleText(CharSequence contentText) {
         if (mTitleTextView != null && !contentText.equals("")) {
             mContentTextView.setAlpha(0.5F);
@@ -512,6 +547,10 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         mMaskColour = maskColour;
     }
 
+    private void setMaskBitmap(Bitmap maskBitmap) {
+        mMaskBitmap = maskBitmap;
+    }
+
     private void setDelay(long delayInMillis) {
         mDelayInMillis = delayInMillis;
     }
@@ -563,40 +602,44 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
      */
     public void setConfig(ShowcaseConfig config) {
 
-        if(config.getDelay() > -1){
+        if (config.getDelay() > -1) {
             setDelay(config.getDelay());
         }
 
-        if(config.getFadeDuration() > 0){
+        if (config.getFadeDuration() > 0) {
             setFadeDuration(config.getFadeDuration());
         }
 
 
-        if(config.getContentTextColor() > 0){
+        if (config.getContentTextColor() > 0) {
             setContentTextColor(config.getContentTextColor());
         }
 
-        if(config.getDismissTextColor() > 0){
+        if (config.getDismissTextColor() > 0) {
             setDismissTextColor(config.getDismissTextColor());
         }
 
-        if(config.getDismissTextStyle() != null){
+        if (config.getDismissTextStyle() != null) {
             setDismissStyle(config.getDismissTextStyle());
         }
 
-        if(config.getMaskColor() > 0){
+        if (config.getMaskColor() > 0) {
             setMaskColour(config.getMaskColor());
         }
 
-        if(config.getShape() != null){
+        if (config.getMaskBitmap() != null) {
+            setMaskBitmap(config.getMaskBitmap());
+        }
+
+        if (config.getShape() != null) {
             setShape(config.getShape());
         }
 
-        if(config.getShapePadding() > -1){
+        if (config.getShapePadding() > -1) {
             setShapePadding(config.getShapePadding());
         }
 
-        if(config.getRenderOverNavigationBar() != null){
+        if (config.getRenderOverNavigationBar() != null) {
             setRenderOverNavigationBar(config.getRenderOverNavigationBar());
         }
     }
@@ -740,6 +783,18 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
             return setTitleText(activity.getString(resId));
         }
 
+
+        public Builder setImageDrawable(Drawable drawable) {
+            showcaseView.setImageDrawable(drawable);
+            return this;
+        }
+
+
+        public Builder setImageBitmap(Bitmap bitmap) {
+            showcaseView.setImageBitmap(bitmap);
+            return this;
+        }
+
         /**
          * Set the descriptive text shown on the ShowcaseView as the title.
          */
@@ -787,6 +842,11 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
 
         public Builder setMaskColour(int maskColour) {
             showcaseView.setMaskColour(maskColour);
+            return this;
+        }
+
+        public Builder setMaskBitmap(Bitmap setMaskBitmap) {
+            showcaseView.setMaskBitmap(setMaskBitmap);
             return this;
         }
 

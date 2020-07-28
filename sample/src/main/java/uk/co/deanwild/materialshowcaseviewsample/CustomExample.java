@@ -1,5 +1,7 @@
 package uk.co.deanwild.materialshowcaseviewsample;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -43,13 +45,16 @@ public class CustomExample extends AppCompatActivity implements View.OnClickList
 
         if (item.getItemId() == R.id.menu_sample_action) {
             View view = findViewById(R.id.menu_sample_action);
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.question_mark512);
             new MaterialShowcaseView.Builder(this)
                     .setTarget(view)
                     .setShapePadding(96)
                     .setDismissText("GOT IT")
                     .setContentText("Example of how to setup a MaterialShowcaseView for menu items in action bar.")
                     .setContentTextColor(getResources().getColor(R.color.green))
-                    .setMaskColour(getResources().getColor(R.color.purple))
+//                    .setMaskColour(getResources().getColor(R.color.purple))
+                    .setMaskBitmap(bm)
+                    .setImageBitmap(bm)
                     .show();
         }
 
@@ -72,13 +77,30 @@ public class CustomExample extends AppCompatActivity implements View.OnClickList
     }
 
     private void presentShowcaseView(int withDelay) {
+//        new MaterialShowcaseView.Builder(this)
+//                .setTarget(mButtonShow)
+//                .setShapePadding(96)
+//                .setDismissText("GOT IT")
+//                .setContentText("This is some amazing feature you should know about")
+//                .setDismissOnTouch(true)
+//                .setContentTextColor(getResources().getColor(R.color.green))
+//                .setMaskColour(getResources().getColor(R.color.purple))
+//                .setDelay(withDelay) // optional but starting animations immediately in onCreate can make them choppy
+//                .singleUse(SHOWCASE_ID) // provide a unique ID used to ensure it is only shown once
+//                .show();
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.question_mark512);
         new MaterialShowcaseView.Builder(this)
                 .setTarget(mButtonShow)
-                .setContentText("This is some amazing feature you should know about")
+                .setShapePadding(96)
                 .setDismissText("GOT IT")
+                .setImageBitmap(bm)
+                .setTitleText("Example of how ")
+                .setContentText("Example of how to setup a MaterialShowcaseView for menu items in action bar.")
                 .setDismissOnTouch(true)
                 .setContentTextColor(getResources().getColor(R.color.green))
-                .setMaskColour(getResources().getColor(R.color.purple))
+//                    .setMaskColour(getResources().getColor(R.color.purple))
+//                .setMaskBitmap(bm)
                 .setDelay(withDelay) // optional but starting animations immediately in onCreate can make them choppy
                 .singleUse(SHOWCASE_ID) // provide a unique ID used to ensure it is only shown once
                 .show();
