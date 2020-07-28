@@ -4,7 +4,7 @@
 A Material Design themed ShowcaseView for Android
 
 
-This library is heavily inspired by the original [ShowcaseView library][1].
+This library is heavily inspired by the original [MaterialShowcaseView library][1].
 
 Since Google introduced the Material design philosophy I have seen quite a few apps with a nice clean, flat showcase view (the Youtube app is a good example). The only library out there however is the [original one][1]. This was a great library for a long time but the theming is now looking a bit dated.
 
@@ -123,7 +123,7 @@ Publishing libraries to Maven is a chore that takes time and effort. Jitpack.io 
 
 
 
-[1]: https://github.com/amlcurran/ShowcaseView
+[1]: https://github.com/deano2390/MaterialShowcaseView
 [2]: http://i.imgur.com/rFHENgz.gif
 [3]: https://code.google.com/p/android-flowtextview/
 [4]: https://img.shields.io/github/release/deano2390/MaterialShowcaseView.svg?label=JitPack
