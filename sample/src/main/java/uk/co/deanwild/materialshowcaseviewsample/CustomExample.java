@@ -3,7 +3,7 @@ package uk.co.deanwild.materialshowcaseviewsample;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +31,7 @@ public class CustomExample extends AppCompatActivity implements View.OnClickList
         mButtonReset = findViewById(R.id.btn_reset);
         mButtonReset.setOnClickListener(this);
 
-        presentShowcaseView(1000); // one second delay
+        presentShowcaseView(1); // one second delay
     }
 
     @Override
@@ -48,12 +48,12 @@ public class CustomExample extends AppCompatActivity implements View.OnClickList
             Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.question_mark512);
             new MaterialShowcaseView.Builder(this)
                     .setTarget(view)
-                    .setShapePadding(96)
+                    .setShapePadding(25)
                     .setDismissText("GOT IT")
                     .setContentText("Example of how to setup a MaterialShowcaseView for menu items in action bar.")
                     .setContentTextColor(getResources().getColor(R.color.green))
 //                    .setMaskColour(getResources().getColor(R.color.purple))
-                    .setMaskBitmap(bm)
+                    .setMaskBitmap(bm, getWindowManager().getDefaultDisplay())
                     .setImageBitmap(bm)
                     .show();
         }
@@ -92,9 +92,10 @@ public class CustomExample extends AppCompatActivity implements View.OnClickList
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.question_mark512);
         new MaterialShowcaseView.Builder(this)
                 .setTarget(mButtonShow)
-                .setShapePadding(96)
+                .setShapePadding(10)
                 .setDismissText("GOT IT")
                 .setImageBitmap(bm)
+                .setImageGif(R.raw.gif_example)
                 .setTitleText("Example of how ")
                 .setContentText("Example of how to setup a MaterialShowcaseView for menu items in action bar.")
                 .setDismissOnTouch(true)

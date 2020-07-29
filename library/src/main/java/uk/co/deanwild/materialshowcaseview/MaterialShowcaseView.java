@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -18,6 +17,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -27,6 +27,9 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +81,7 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private boolean mRenderOverNav = false;
     private int mMaskColour = 0;
     private Bitmap mMaskBitmap;
+    private Display mDisplay;
     private IAnimationFactory mAnimationFactory;
     private boolean mShouldAnimate = true;
     private boolean mUseFadeAnimation = false;
@@ -193,18 +197,19 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
             // draw solid background
             mCanvas.drawColor(mMaskColour);
         } else if (mMaskBitmap != null) {
-            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            Matrix matrix = new Matrix();
-            matrix.postScale(10, 15);
-            matrix.postRotate(45);
+//            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//            Matrix matrix = new Matrix();
+//            matrix.postScale(10, 15);
+//            mDisplay
+////            matrix.postRotate(45);
+//
+//            Bitmap bitmap = Bitmap.createBitmap(mMaskBitmap, 0, 0, mMaskBitmap.getWidth() / 2, mMaskBitmap.getHeight() / 2, matrix, true);
+//            mCanvas.drawBitmap(mMaskBitmap, 0, 0, paint);
 
-            Bitmap bitmap = Bitmap.createBitmap(mMaskBitmap, 0, 0, mMaskBitmap.getWidth() / 2, mMaskBitmap.getHeight() / 2, matrix, true);
-            mCanvas.drawBitmap(mMaskBitmap, 0, 0, null);
-
-//            int halfWidth = Width/2;
-//            int halfHeight = Height/2
-//            Rect dstRectForRender = new Rect( X - halfWidth, Y - halfHeight, X + halfWidth, Y + halfHeight );
-//            canvas.drawBitmap ( someBitmap, null, dstRectForRender, null );
+            int halfWidth = mDisplay.getWidth()/2;
+            int halfHeight = mDisplay.getHeight() / 2;
+            Rect dstRectForRender = new Rect( - halfWidth, - halfHeight,  halfWidth,  halfHeight );
+            canvas.drawBitmap ( mMaskBitmap, null, dstRectForRender, null );
         }
 
         // Prepare eraser Paint if needed
@@ -454,7 +459,23 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
 
     private void setImageBitmap(Bitmap bitmap) {
         if (mImageView != null) {
+            Glide.with(getContext())
+                    .load(bitmap)
+                    .centerCrop()
+                    .apply(new RequestOptions().override(600, 200))
+                    .into(mImageView);
             mImageView.setImageBitmap(bitmap);
+        }
+    }
+
+    private void setImageGif(int res) {
+        if (mImageView != null) {
+            Glide.with(getContext())
+                    .asGif()
+                    .load(res)
+                    .fitCenter()
+                    .apply(new RequestOptions().override(600, 200))
+                    .into(mImageView);
         }
     }
 
@@ -547,8 +568,9 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         mMaskColour = maskColour;
     }
 
-    private void setMaskBitmap(Bitmap maskBitmap) {
+    private void setMaskBitmap(Bitmap maskBitmap, Display display) {
         mMaskBitmap = maskBitmap;
+        mDisplay = display;
     }
 
     private void setDelay(long delayInMillis) {
@@ -628,7 +650,7 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         }
 
         if (config.getMaskBitmap() != null) {
-            setMaskBitmap(config.getMaskBitmap());
+            setMaskBitmap(config.getMaskBitmap(), mDisplay);
         }
 
         if (config.getShape() != null) {
@@ -795,6 +817,11 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
             return this;
         }
 
+        public Builder setImageGif(int resGif) {
+            showcaseView.setImageGif(resGif);
+            return this;
+        }
+
         /**
          * Set the descriptive text shown on the ShowcaseView as the title.
          */
@@ -845,8 +872,8 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
             return this;
         }
 
-        public Builder setMaskBitmap(Bitmap setMaskBitmap) {
-            showcaseView.setMaskBitmap(setMaskBitmap);
+        public Builder setMaskBitmap(Bitmap setMaskBitmap, Display display) {
+            showcaseView.setMaskBitmap(setMaskBitmap, display);
             return this;
         }
 
